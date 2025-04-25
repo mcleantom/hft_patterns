@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.bic": "javascript",
+        "vector": "cpp"
+    }
+}
