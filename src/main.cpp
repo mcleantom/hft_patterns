@@ -5,6 +5,7 @@
 #include "arena_allocator.hpp"
 #include "pool_allocator.hpp"
 #include "curiously_recurring_template_pattern.hpp"
+#include "branch_reduction.hpp"
 
 
 int main(int argc, char** argv) {
