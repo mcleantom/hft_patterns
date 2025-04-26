@@ -2,6 +2,9 @@
 #include "cache_warming.hpp"
 #include "simd.hpp"
 #include "prefetch.hpp"
+#include "arena_allocator.hpp"
+#include "pool_allocator.hpp"
+
 
 int main(int argc, char** argv) {
     benchmark::Initialize(&argc, argv);
