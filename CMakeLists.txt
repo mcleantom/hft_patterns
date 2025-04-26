@@ -23,3 +23,8 @@ target_link_libraries(
 target_include_directories(HFTBenchmark PRIVATE
     ${CMAKE_SOURCE_DIR}/src
 )
+target_compile_definitions(
+    HFTBenchmark
+    PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>
+)
