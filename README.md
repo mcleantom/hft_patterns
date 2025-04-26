@@ -26,8 +26,10 @@ ArenaBenchmark/NormalAllocation              304270 ns       332031 ns         1
 ArenaBenchmark/ArenaAllocation                30230 ns        30831 ns        26353
 PoolBenchmark/NormalAllocation               489974 ns       487717 ns         1730
 PoolBenchmark/PoolAllocation                  40432 ns        38608 ns        16593
-CRTPBenchmark/Polymorphism                      627 ns          641 ns      1000000
-CRTPBenchmark/CRTP                              161 ns          157 ns      4977778
-BranchReductionBenchmark/Branching            0.480 ns        0.473 ns   1486696296
-BranchReductionBenchmark/BranchReduction      0.504 ns        0.506 ns   1544827586
+CRTPBenchmark/Polymorphism                      459 ns          455 ns      1544828
+CRTPBenchmark/CRTP                              107 ns          107 ns      6400000
+BranchReductionBenchmark/Branching            0.330 ns        0.330 ns   2036363636
+BranchReductionBenchmark/BranchReduction      0.368 ns        0.368 ns   1866666667
+LockFreeBenchmark/LockBuffer                   27.9 ns         27.6 ns     24888889
+LockFreeBenchmark/AtomicBuffer                 1.12 ns         1.12 ns    640000000
 ```
