@@ -3,6 +3,15 @@
 #include <benchmark/benchmark.h>
 
 
+#ifdef _MSC_VER
+    #define LIKELY(x)   (x)
+    #define UNLIKELY(x) (x)
+#else
+    #define LIKELY(x)   (__builtin_expect(!!(x), 1))
+    #define UNLIKELY(x) (__builtin_expect(!!(x), 0))
+#endif
+
+
 void handleErrorA() {
 
 }
@@ -97,7 +106,7 @@ void handleErrors(ErrorFlags errors)
 
 void doFn() {
     ErrorFlags errors = checkForErrors();
-    if (!errors) {
+    if (LIKELY(errors == ErrorFlags::NoError)) {
         executeHotPath();
     }
     else {

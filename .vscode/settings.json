@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "*.bic": "javascript",
-        "vector": "cpp"
+        "vector": "cpp",
+        "atomic": "cpp",
+        "memory": "cpp"
     }
 }
