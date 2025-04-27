@@ -87,3 +87,27 @@ BENCHMARK_F(PrefetchBenchmark, WithSIMD)(benchmark::State& state) {
         benchmark::DoNotOptimize(sum);
     }
 }
+
+
+BENCHMARK_F(PrefetchBenchmark, PrefetchTwo)(benchmark::State& state)
+{
+    for (auto _ : state) {
+        long sum = 0;
+        int i = 0;
+        int size = static_cast<int>(data.size());
+
+        for (int i = 0; i < size; i += 32) {  // process 4x 8-ints per loop
+            PREFETCH(&data[i + prefetch_distance], 3);
+
+            sum += simd_sum8(data, i);
+            sum += simd_sum8(data, i + 8);
+            sum += simd_sum8(data, i + 16);
+            sum += simd_sum8(data, i + 24);
+        }
+
+        for (; i < size; ++i) {
+            sum += data[i];
+        }
+        benchmark::DoNotOptimize(sum);
+    }
+}
