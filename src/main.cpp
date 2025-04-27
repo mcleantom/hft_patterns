@@ -8,6 +8,7 @@
 #include "branch_reduction.hpp"
 #include "lock_free.hpp"
 #include "michael_scott_queue.hpp"
+#include "hazard_pointer.hpp"
 
 
 int main(int argc, char** argv) {

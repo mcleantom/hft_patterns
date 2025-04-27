@@ -38,14 +38,24 @@ public:
     bool push(const T& value)
     {
         MSQueueNode<T>* newNode = new MSQueueNode<T>(value);
-        MSQueueNode<T>* oldTail = tail.load(std::memory_order_relaxed);
-
-        while(!std::atomic_compare_exchange_weak(&oldTail->next, &newNode, nullptr))
+        while (true)
         {
-            oldTail = tail.load(std::memory_order_relaxed);
+            MSQueueNode<T>* oldTail = tail.load(std::memory_order_acquire);
+            MSQueueNode<T>* tailNext = oldTail->next.load(std::memory_order_acquire);
+    
+            if (tailNext == nullptr)
+            {
+                if (oldTail->next.compare_exchange_weak(tailNext, newNode))
+                {
+                    tail.compare_exchange_weak(oldTail, newNode);
+                    return true;
+                }
+            }
+            else
+            {
+                tail.compare_exchange_weak(oldTail, tailNext);
+            }
         }
-        tail.compare_exchange_strong(oldTail, newNode, std::memory_order_relaxed);
-        return true;
     }
 
     bool pop(T& value)
@@ -101,16 +111,20 @@ static void MSProducer(MSQueue<int>& queue, int numItems)
 {
     for (int i = 0; i < numItems; ++i)
     {
-        queue.push(i);  // Push to the queue
+        queue.push(i);
     }
 }
 
 static void MSConsumer(MSQueue<int>& queue, int numItems)
 {
     int value;
-    for (int i = 0; i < numItems; ++i)
+    int popped = 0;
+    while (popped < numItems)
     {
-        while (!queue.pop(value));  // Keep popping until the queue is not empty
+        if (queue.pop(value))
+        {
+            ++popped;
+        }
     }
 }
 
@@ -118,68 +132,62 @@ static void MutexProducer(MutexQueue<int>& queue, int numItems)
 {
     for (int i = 0; i < numItems; ++i)
     {
-        queue.push(i);  // Push to the queue
+        queue.push(i);
     }
 }
 
-// Consumer function for the mutex-based queue
+
 static void MutexConsumer(MutexQueue<int>& queue, int numItems)
 {
     int value;
     for (int i = 0; i < numItems; ++i)
     {
-        while (!queue.pop(value));  // Keep popping until the queue is not empty
+        while (!queue.pop(value));
     }
 }
 
 
 BENCHMARK_F(LockFreeBenchmark, MSLocking)(benchmark::State& state)
 {
-    MutexQueue<int> queue;
-    const int numItems = 10000;  // Number of items per producer
-    const int numProducers = 4;  // Number of producer threads
+    for (auto _ : state) {
+        MutexQueue<int> queue;
 
-    std::vector<std::thread> producers;
-    std::thread consumerThread(MutexConsumer, std::ref(queue), numItems * numProducers);
-
-    // Start multiple producer threads
-    for (int i = 0; i < numProducers; ++i)
-    {
-        producers.push_back(std::thread(MutexProducer, std::ref(queue), numItems));
+        std::vector<std::thread> producers;
+        std::thread consumerThread(MutexConsumer, std::ref(queue), ms_numItems * ms_numProducers);
+    
+        for (int i = 0; i < ms_numProducers; ++i)
+        {
+            producers.push_back(std::thread(MutexProducer, std::ref(queue), ms_numItems));
+        }
+    
+        for (auto& producer : producers)
+        {
+            producer.join();
+        }
+    
+        consumerThread.join();
     }
-
-    // Wait for all producer threads to finish
-    for (auto& producer : producers)
-    {
-        producer.join();
-    }
-
-    // Wait for the consumer thread to finish
-    consumerThread.join();
 }
 
 
 BENCHMARK_F(LockFreeBenchmark, MSAtomic)(benchmark::State& state)
 {
-    const int numItems = 10000;  // Number of items per producer
-    const int numProducers = 4;  // Number of producer threads
-    MSQueue<int> queue;
-
-    std::vector<std::thread> producers;
-    std::thread consumerThread(MSConsumer, std::ref(queue), numItems * numProducers);
-
-    // Start multiple producer threads
-    for (int i = 0; i < numProducers; ++i)
-    {
-        producers.push_back(std::thread(MSProducer, std::ref(queue), numItems));
+    for (auto _ : state) {
+        MSQueue<int> queue;
+    
+        std::vector<std::thread> producers;
+        std::thread consumerThread(MSConsumer, std::ref(queue), ms_numItems * ms_numProducers);
+    
+        for (int i = 0; i < ms_numProducers; ++i)
+        {
+            producers.push_back(std::thread(MSProducer, std::ref(queue), ms_numItems));
+        }
+    
+        for (auto& producer : producers)
+        {
+            producer.join();
+        }
+    
+        consumerThread.join();
     }
-
-    // Wait for all producer threads to finish
-    for (auto& producer : producers)
-    {
-        producer.join();
-    }
-
-    // Wait for the consumer thread to finish
-    consumerThread.join();
 }

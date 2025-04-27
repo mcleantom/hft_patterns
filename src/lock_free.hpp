@@ -100,6 +100,8 @@ public:
 
     }
 
+    const int ms_numItems = 10000;
+    const int ms_numProducers = 10;
 };
 
 BENCHMARK_F(LockFreeBenchmark, LockBuffer)(benchmark::State& state)
