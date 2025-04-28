@@ -25,12 +25,13 @@ public:
         // No cleanup needed for this example, but this is where you could do it
     }
 
+    const static int stride = 16;
     std::vector<int> data;
     int prefetch_distance = 128; // 64 / sizeof(int);  // Cache line size / size of int
 };
 
 // Function without __builtin_prefetch
-BENCHMARK_F(PrefetchBenchmark, NoPrefetch)(benchmark::State& state) {
+BENCHMARK_F(PrefetchBenchmark, NoPrefetchAutoSIMD)(benchmark::State& state) {
     for (auto _ : state) {
         long sum = 0;
         for (int i = 0; i < data.size(); i++) {
@@ -58,9 +59,10 @@ BENCHMARK_F(PrefetchBenchmark, WithPrefetch)(benchmark::State& state) {
         int i = 0;
         int size = static_cast<int>(data.size());
 
-        for (; i <= size - prefetch_distance * 2; i += 8) {
+        for (; i <= size - stride; i += stride) {
             PREFETCH(&data[i + prefetch_distance], 3);
             sum += simd_sum8(data, i);
+            sum += simd_sum8(data, i+8);
         }
 
         for (; i < size; ++i) {
@@ -77,32 +79,9 @@ BENCHMARK_F(PrefetchBenchmark, WithSIMD)(benchmark::State& state) {
         int i = 0;
         int size = static_cast<int>(data.size());
 
-        for (; i <= size - prefetch_distance * 2; i += 8) {
-            sum += simd_sum8(data, i);
-        }
-
-        for (; i < size; ++i) {
-            sum += data[i];
-        }
-        benchmark::DoNotOptimize(sum);
-    }
-}
-
-
-BENCHMARK_F(PrefetchBenchmark, PrefetchTwo)(benchmark::State& state)
-{
-    for (auto _ : state) {
-        long sum = 0;
-        int i = 0;
-        int size = static_cast<int>(data.size());
-
-        for (int i = 0; i < size; i += 32) {  // process 4x 8-ints per loop
-            PREFETCH(&data[i + prefetch_distance], 3);
-
+        for (; i <= size - stride; i += stride) {
             sum += simd_sum8(data, i);
             sum += simd_sum8(data, i + 8);
-            sum += simd_sum8(data, i + 16);
-            sum += simd_sum8(data, i + 24);
         }
 
         for (; i < size; ++i) {
