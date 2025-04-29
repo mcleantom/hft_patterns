@@ -15,25 +15,21 @@ CPU Caches:
 -----------------------------------------------------------------------------------
 Benchmark                                         Time             CPU   Iterations
 -----------------------------------------------------------------------------------
-CacheBenchmark/BM_CacheCold                12961857 ns     13113839 ns           56
-CacheBenchmark/BM_CacheWarm                12552859 ns     12276786 ns           56
-SIMDBenchmark/BM_AddArray                     12508 ns        12556 ns        56000
-SIMDBenchmark/BM_AddArraySIMD                 12834 ns        12835 ns        56000
-PrefetchBenchmark/NoPrefetch                 487334 ns       500000 ns         1000
-PrefetchBenchmark/WithPrefetch               198919 ns       194972 ns         3446
-PrefetchBenchmark/WithSIMD                   197258 ns       196725 ns         3733
-ArenaBenchmark/NormalAllocation              204089 ns       177854 ns         2987
-ArenaBenchmark/ArenaAllocation                18683 ns        18834 ns        37333
-PoolBenchmark/NormalAllocation               315577 ns       313895 ns         2240
-PoolBenchmark/PoolAllocation                  26862 ns        26681 ns        26353
-CRTPBenchmark/Polymorphism                      391 ns          392 ns      1792000
-CRTPBenchmark/CRTP                              107 ns          107 ns      6400000
-BranchReductionBenchmark/Branching            0.327 ns        0.322 ns   2133333333
-BranchReductionBenchmark/BranchReduction      0.341 ns        0.342 ns   2240000000
-LockFreeBenchmark/LockBuffer                   27.7 ns         27.6 ns     24888889
-LockFreeBenchmark/AtomicBuffer                 1.15 ns         1.15 ns    640000000
-LockFreeBenchmark/MSLocking                 8392197 ns       921376 ns          407
-LockFreeBenchmark/MSAtomic                 18908475 ns       734375 ns         1000
-HazardPointerBenchmark/Locking                 76.3 ns         76.7 ns     11200000
-HazardPointerBenchmark/NonLocking              43.9 ns         43.0 ns     16000000
+CacheBenchmark/BM_CacheCold                11575889 ns     11474609 ns           64
+CacheBenchmark/BM_CacheWarm                11377089 ns     11230469 ns           64
+SIMDBenchmark/BM_AddArray                     11812 ns        11719 ns        56000
+SIMDBenchmark/BM_AddArraySIMD                 11696 ns        11719 ns        64000
+PrefetchBenchmark/NoPrefetchAutoSIMD         447346 ns       444984 ns         1545
+PrefetchBenchmark/WithPrefetch               186709 ns       188354 ns         3733
+PrefetchBenchmark/WithSIMD                   146872 ns       146484 ns         4480
+ArenaBenchmark/NormalAllocation              200783 ns       230164 ns         2987
+ArenaBenchmark/ArenaAllocation                17893 ns        17997 ns        37333
+PoolBenchmark/NormalAllocation               306347 ns       306920 ns         2240
+PoolBenchmark/PoolAllocation                  25842 ns        25495 ns        26353
+CRTPBenchmark/Polymorphism                      433 ns          433 ns      1659259
+CRTPBenchmark/CRTP                              102 ns          100 ns      6400000
+BranchReductionBenchmark/Branching          1385363 ns      1411898 ns          498
+BranchReductionBenchmark/BranchReduction    1585977 ns      1569475 ns          448
+StructOfVectorsBenchmark/VectorOfStructs        522 ns          516 ns      1000000
+StructOfVectorsBenchmark/StructOfVectors        536 ns          547 ns      1000000
 ```
