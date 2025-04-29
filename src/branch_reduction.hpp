@@ -13,19 +13,23 @@
 
 
 void handleErrorA() {
-
+    static int dummy = 0;
+    benchmark::DoNotOptimize(++dummy);
 }
 
 void handleErrorB() {
-
+    static int dummy = 0;
+    benchmark::DoNotOptimize(++dummy);
 }
 
 void handleErrorC() {
-
+    static int dummy = 0;
+    benchmark::DoNotOptimize(++dummy);
 }
 
 void executeHotPath() {
-
+    static int dummy = 0;
+    benchmark::DoNotOptimize(++dummy);
 }
 
 

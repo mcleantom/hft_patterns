@@ -15,8 +15,6 @@
 
 class PrefetchBenchmark : public benchmark::Fixture {
 public:
-    static constexpr size_t data_size = 1 << 20;
-
     void SetUp(const benchmark::State& state) override {
         data.resize(data_size, 1); // Resize the vector based on the input argument
     }
@@ -25,9 +23,10 @@ public:
         // No cleanup needed for this example, but this is where you could do it
     }
 
-    const static int stride = 16;
+    static constexpr size_t data_size = 1 << 20;
+    static constexpr size_t stride = 16;
     std::vector<int> data;
-    int prefetch_distance = 128; // 64 / sizeof(int);  // Cache line size / size of int
+    static const int prefetch_distance = 128; // 64 / sizeof(int);  // Cache line size / size of int
 };
 
 // Function without __builtin_prefetch
@@ -58,8 +57,8 @@ BENCHMARK_F(PrefetchBenchmark, WithPrefetch)(benchmark::State& state) {
         long sum = 0;
         int i = 0;
         int size = static_cast<int>(data.size());
-
-        for (; i <= size - stride; i += stride) {
+        int safe_limit = size - std::max(16, prefetch_distance);
+        for (; i < safe_limit; i += stride) {
             PREFETCH(&data[i + prefetch_distance], 3);
             sum += simd_sum8(data, i);
             sum += simd_sum8(data, i+8);
@@ -78,8 +77,8 @@ BENCHMARK_F(PrefetchBenchmark, WithSIMD)(benchmark::State& state) {
         long sum = 0;
         int i = 0;
         int size = static_cast<int>(data.size());
-
-        for (; i <= size - stride; i += stride) {
+        int safe_limit = size - std::max(16, prefetch_distance);
+        for (; i < safe_limit; i += stride) {
             sum += simd_sum8(data, i);
             sum += simd_sum8(data, i + 8);
         }
