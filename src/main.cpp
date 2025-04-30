@@ -11,6 +11,7 @@
 // #include "hazard_pointer.hpp"
 // #include "mpmc_queue.hpp"
 #include "vos_vs_sov.hpp"
+#include "affinity.hpp"
 
 int main(int argc, char** argv) {
     benchmark::Initialize(&argc, argv);
